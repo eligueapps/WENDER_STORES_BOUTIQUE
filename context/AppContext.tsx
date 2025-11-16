@@ -6,6 +6,9 @@ interface AppContextType {
     products: Product[];
     setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
     categories: Category[];
+    addCategory: (category: Omit<Category, 'id'>) => { success: boolean, message: string };
+    updateCategory: (category: Category) => { success: boolean, message: string };
+    deleteCategory: (categoryId: number) => void;
     tags: string[];
     cart: CartItem[];
     addToCart: (product: Product, customization: Customization, quantity: number) => void;
@@ -32,7 +35,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [products, setProducts] = useState<Product[]>(initialProducts);
-    const [categories] = useState<Category[]>(initialCategories);
+    const [categories, setCategories] = useState<Category[]>(initialCategories);
     const [tags] = useState<string[]>(initialTags);
     const [cart, setCart] = useState<CartItem[]>([]);
     const [orders, setOrders] = useState<Order[]>(initialOrders);
@@ -115,12 +118,43 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setOrders(prevOrders => prevOrders.map(order => order.id === orderId ? { ...order, status } : order));
     };
 
+    // Category Management
+    const addCategory = (category: Omit<Category, 'id'>): { success: boolean, message: string } => {
+        const nameExists = categories.some(c => c.name.toLowerCase() === category.name.toLowerCase());
+        if (nameExists) {
+            return { success: false, message: 'Une catégorie avec ce nom existe déjà.' };
+        }
+        const newCategory: Category = {
+            ...category,
+            id: Date.now(),
+        };
+        setCategories(prev => [newCategory, ...prev]);
+        return { success: true, message: 'Catégorie ajoutée avec succès.' };
+    };
+
+    const updateCategory = (category: Category): { success: boolean, message: string } => {
+        const nameExists = categories.some(c => c.id !== category.id && c.name.toLowerCase() === category.name.toLowerCase());
+        if (nameExists) {
+            return { success: false, message: 'Une autre catégorie avec ce nom existe déjà.' };
+        }
+        setCategories(prev => prev.map(c => c.id === category.id ? category : c));
+        return { success: true, message: 'Catégorie mise à jour avec succès.' };
+    };
+
+    const deleteCategory = (categoryId: number) => {
+        // Here you might want to check if any product is using this category
+        setCategories(prev => prev.filter(c => c.id !== categoryId));
+    };
+
     const cartTotal = useMemo(() => cart.reduce((total, item) => total + item.totalPrice, 0), [cart]);
 
     const value = {
         products,
         setProducts,
         categories,
+        addCategory,
+        updateCategory,
+        deleteCategory,
         tags,
         cart,
         addToCart,

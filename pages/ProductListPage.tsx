@@ -4,7 +4,7 @@ import { useAppContext } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 
 const ProductListPage: React.FC = () => {
-    const { products, categories, tags, searchTerm } = useAppContext();
+    const { products, categories, searchTerm } = useAppContext();
 
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -15,6 +15,20 @@ const ProductListPage: React.FC = () => {
             prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
         );
     };
+
+    const dynamicTagsWithCount = useMemo(() => {
+        const tagCounts: { [key: string]: number } = {};
+        products.forEach(product => {
+            if (selectedCategory && product.categoryId !== selectedCategory) return;
+            product.tags.forEach(tag => {
+                tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+            });
+        });
+        return Object.entries(tagCounts)
+            .map(([tag, count]) => ({ tag, count }))
+            .sort((a, b) => a.tag.localeCompare(b.tag));
+    }, [products, selectedCategory]);
+
 
     const filteredAndSortedProducts = useMemo(() => {
         let filtered = products;
@@ -34,9 +48,11 @@ const ProductListPage: React.FC = () => {
             filtered = filtered.filter(p => p.categoryId === selectedCategory);
         }
         
-        // 3. Filter by selected tags
+        // 3. Filter by selected tags (OR logic)
         if (selectedTags.length > 0) {
-            filtered = filtered.filter(p => selectedTags.every(tag => p.tags.includes(tag)));
+            filtered = filtered.filter(p => 
+                p.tags.some(tag => selectedTags.includes(tag))
+            );
         }
 
         // 4. Sort
@@ -57,22 +73,7 @@ const ProductListPage: React.FC = () => {
 
     return (
         <div>
-            <h1 className="text-4xl font-extrabold text-center text-brand-dark mb-4">{pageTitle}</h1>
-
-            <div className="mb-8">
-                 <h3 className="text-xl font-bold mb-4 text-brand-dark">Filtrer par tags</h3>
-                 <div className="flex items-center gap-2 overflow-x-auto pb-3 -mx-4 px-4" style={{'scrollbarWidth': 'none', '-ms-overflow-style': 'none'}}>
-                    {tags.map(tag => (
-                        <button
-                            key={tag}
-                            onClick={() => handleTagToggle(tag)}
-                            className={`flex-shrink-0 px-4 py-2 text-sm rounded-full transition-all duration-200 font-medium capitalize transform hover:scale-105 ${selectedTags.includes(tag) ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-gray-700 hover:bg-slate-100 shadow-sm border'}`}
-                        >
-                            {tag}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            <h1 className="text-4xl font-extrabold text-center text-brand-dark mb-8">{pageTitle}</h1>
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Filters */}
@@ -99,6 +100,24 @@ const ProductListPage: React.FC = () => {
                                 </li>
                             ))}
                         </ul>
+
+                        {dynamicTagsWithCount.length > 0 && (
+                             <div className="mt-8 pt-6 border-t border-slate-200">
+                                <h3 className="text-xl font-bold mb-4">Filtrer par tags</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {dynamicTagsWithCount.map(({ tag, count }) => (
+                                        <button
+                                            key={tag}
+                                            onClick={() => handleTagToggle(tag)}
+                                            className={`flex items-center px-3 py-1.5 text-sm rounded-full transition-all duration-200 font-medium capitalize transform hover:scale-105 ${selectedTags.includes(tag) ? 'bg-brand-primary text-white shadow-md' : 'bg-slate-100 text-gray-700 hover:bg-slate-200 border border-slate-200'}`}
+                                        >
+                                            {tag}
+                                            <span className="ml-1.5 text-xs bg-slate-300/50 rounded-full px-1.5 py-0.5">{count}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </aside>
 

@@ -1,10 +1,30 @@
 import { Product, Category, Order } from './types';
 
 export const initialCategories: Category[] = [
-  { id: 1, name: 'Stores Enrouleurs' },
-  { id: 2, name: 'Stores Vénitiens' },
-  { id: 3, name: 'Rideaux Plissés' },
-  { id: 4, name: 'Stores Romains' },
+  { 
+    id: 1, 
+    name: 'Stores Enrouleurs',
+    description: 'Simples, élégants et fonctionnels, parfaits pour un look moderne.',
+    image: 'https://picsum.photos/seed/cat1/200/200'
+  },
+  { 
+    id: 2, 
+    name: 'Stores Vénitiens',
+    description: 'Contrôle précis de la lumière avec un style classique et durable.',
+    image: 'https://picsum.photos/seed/cat2/200/200'
+  },
+  { 
+    id: 3, 
+    name: 'Rideaux Plissés',
+    description: 'Texture douce et tombé élégant pour une atmosphère chaleureuse.',
+    image: 'https://picsum.photos/seed/cat3/200/200'
+  },
+  { 
+    id: 4, 
+    name: 'Stores Romains',
+    description: 'Se replient en accordéon pour un style sophistiqué et intemporel.',
+    image: 'https://picsum.photos/seed/cat4/200/200'
+  },
 ];
 
 export const initialTags: string[] = ['cuisine', 'salon', 'chambre', 'bureau', 'occultant', 'tamisant', 'moderne', 'classique'];

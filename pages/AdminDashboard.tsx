@@ -6,8 +6,9 @@ import ProductForm from '../components/admin/ProductForm';
 import OrderInvoice from '../components/admin/OrderInvoice';
 import { PDFDownloadIcon, SpinnerIcon, EyeIcon } from '../components/icons/Icons';
 import OrderDetailsModal from '../components/admin/OrderDetailsModal';
+import CategoryManager from '../components/admin/CategoryManager';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'settings';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'categories' | 'settings';
 
 const AdminDashboard: React.FC = () => {
     const { products, setProducts, orders, updateOrderStatus, termsAndConditions, setTermsAndConditions, categories, tags, logout } = useAppContext();
@@ -254,11 +255,14 @@ const AdminDashboard: React.FC = () => {
             <button className="mt-4 px-4 py-2 bg-brand-secondary text-white rounded-md hover:bg-opacity-90">Enregistrer les CGV</button>
         </div>
     );
+    
+    const renderCategories = () => <CategoryManager />;
 
     const tabContent = {
         dashboard: renderDashboard(),
         products: renderProducts(),
         orders: renderOrders(),
+        categories: renderCategories(),
         settings: renderSettings()
     };
     
@@ -266,6 +270,7 @@ const AdminDashboard: React.FC = () => {
         dashboard: "Tableau de bord",
         products: "Produits",
         orders: "Commandes",
+        categories: "Catégories",
         settings: "Paramètres"
     };
 
@@ -280,12 +285,12 @@ const AdminDashboard: React.FC = () => {
                     Déconnexion
                 </button>
             </div>
-            <div className="flex border-b border-slate-200 mb-6">
+            <div className="flex border-b border-slate-200 mb-6 overflow-x-auto">
                 {(Object.keys(tabContent) as AdminTab[]).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`capitalize px-4 py-2 text-lg font-semibold transition-colors ${activeTab === tab ? 'border-b-2 border-brand-primary text-brand-primary' : 'text-gray-500 hover:text-brand-dark'}`}
+                        className={`capitalize px-4 py-2 text-lg font-semibold transition-colors whitespace-nowrap ${activeTab === tab ? 'border-b-2 border-brand-primary text-brand-primary' : 'text-gray-500 hover:text-brand-dark'}`}
                     >
                         {tabNames[tab]}
                     </button>
