@@ -1,0 +1,155 @@
+import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
+import { Product, Category, CartItem, Order, Page, Customization } from '../types';
+import { initialProducts, initialCategories, initialTags, initialOrders, initialTermsAndConditions } from '../data';
+
+interface AppContextType {
+    products: Product[];
+    setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+    categories: Category[];
+    tags: string[];
+    cart: CartItem[];
+    addToCart: (product: Product, customization: Customization, quantity: number) => void;
+    removeFromCart: (cartItemId: string) => void;
+    updateCartQuantity: (cartItemId: string, newQuantity: number) => void;
+    clearCart: () => void;
+    cartTotal: number;
+    orders: Order[];
+    addOrder: (order: Omit<Order, 'id' | 'date' | 'paymentStatus' | 'deliveryFee'>) => void;
+    updateOrderStatus: (orderId: string, status: Order['status']) => void;
+    currentPage: Page;
+    currentPageId: number | null;
+    setCurrentPage: (page: Page, id?: number) => void;
+    termsAndConditions: string;
+    setTermsAndConditions: React.Dispatch<React.SetStateAction<string>>;
+    searchTerm: string;
+    setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+    isAuthenticated: boolean;
+    login: (username: string, password: string) => boolean;
+    logout: () => void;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [products, setProducts] = useState<Product[]>(initialProducts);
+    const [categories] = useState<Category[]>(initialCategories);
+    const [tags] = useState<string[]>(initialTags);
+    const [cart, setCart] = useState<CartItem[]>([]);
+    const [orders, setOrders] = useState<Order[]>(initialOrders);
+    const [currentPage, _setCurrentPage] = useState<Page>('home');
+    const [currentPageId, setCurrentPageId] = useState<number | null>(null);
+    const [termsAndConditions, setTermsAndConditions] = useState<string>(initialTermsAndConditions);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    const setCurrentPage = (page: Page, id?: number) => {
+        _setCurrentPage(page);
+        setCurrentPageId(id || null);
+        window.scrollTo(0, 0);
+    };
+
+    const login = (username: string, password: string): boolean => {
+        if (username === 'admin-ws' && password === '123456') {
+            setIsAuthenticated(true);
+            return true;
+        }
+        return false;
+    };
+
+    const logout = () => {
+        setIsAuthenticated(false);
+        setCurrentPage('home');
+    };
+
+    const addToCart = (product: Product, customization: Customization, quantity: number) => {
+        const surface = (customization.width / 100) * (customization.height / 100) * quantity;
+        const totalPrice = surface * product.pricePerSqM;
+
+        const newCartItem: CartItem = {
+            id: `${product.id}-${new Date().getTime()}`,
+            product,
+            customization,
+            quantity,
+            surface,
+            totalPrice,
+        };
+        setCart(prevCart => [...prevCart, newCartItem]);
+    };
+
+    const removeFromCart = (cartItemId: string) => {
+        setCart(prevCart => prevCart.filter(item => item.id !== cartItemId));
+    };
+    
+    const updateCartQuantity = (cartItemId: string, newQuantity: number) => {
+        setCart(prevCart => prevCart.map(item => {
+            if (item.id === cartItemId) {
+                if (newQuantity <= 0) {
+                    return item; // Or remove if quantity is 0
+                }
+                const newSurface = (item.customization.width / 100) * (item.customization.height / 100) * newQuantity;
+                const newTotalPrice = newSurface * item.product.pricePerSqM;
+                return { ...item, quantity: newQuantity, surface: newSurface, totalPrice: newTotalPrice };
+            }
+            return item;
+        }));
+    };
+
+    const clearCart = () => {
+        setCart([]);
+    };
+
+    const addOrder = (order: Omit<Order, 'id' | 'date' | 'paymentStatus' | 'deliveryFee'>) => {
+        const deliveryFee = 15.00;
+        const newOrder: Order = {
+            ...order,
+            id: `ORD${(orders.length + 1).toString().padStart(3, '0')}`,
+            date: new Date(),
+            paymentStatus: 'Payé',
+            deliveryFee: deliveryFee,
+            total: order.total + deliveryFee,
+        }
+        setOrders(prevOrders => [newOrder, ...prevOrders]);
+    };
+
+    const updateOrderStatus = (orderId: string, status: Order['status']) => {
+        setOrders(prevOrders => prevOrders.map(order => order.id === orderId ? { ...order, status } : order));
+    };
+
+    const cartTotal = useMemo(() => cart.reduce((total, item) => total + item.totalPrice, 0), [cart]);
+
+    const value = {
+        products,
+        setProducts,
+        categories,
+        tags,
+        cart,
+        addToCart,
+        removeFromCart,
+        updateCartQuantity,
+        clearCart,
+        cartTotal,
+        orders,
+        addOrder,
+        updateOrderStatus,
+        currentPage,
+        currentPageId,
+        setCurrentPage,
+        termsAndConditions,
+        setTermsAndConditions,
+        searchTerm,
+        setSearchTerm,
+        isAuthenticated,
+        login,
+        logout
+    };
+
+    return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
+
+export const useAppContext = () => {
+    const context = useContext(AppContext);
+    if (context === undefined) {
+        throw new Error('useAppContext must be used within an AppProvider');
+    }
+    return context;
+};
