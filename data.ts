@@ -1,4 +1,4 @@
-import { Product, Category, Order } from './types';
+import { Product, Category, Order, Country, City } from './types';
 
 export const initialCategories: Category[] = [
   { 
@@ -105,29 +105,44 @@ export const initialProducts: Product[] = [
   }
 ];
 
+export const initialCountries: Country[] = [
+  { id: 1, name: 'Maroc', isActive: true },
+  { id: 2, name: 'France', isActive: true },
+  { id: 3, name: 'Belgique', isActive: false },
+];
+
+export const initialCities: City[] = [
+  { id: 1, countryId: 1, name: 'Casablanca', deliveryFee: 30, estimatedTime: '24h', isActive: true },
+  { id: 2, countryId: 1, name: 'Rabat', deliveryFee: 35, estimatedTime: '24h', isActive: true },
+  { id: 3, countryId: 1, name: 'Marrakech', deliveryFee: 40, estimatedTime: '48h', isActive: false },
+  { id: 4, countryId: 2, name: 'Paris', deliveryFee: 10, estimatedTime: '48h', isActive: true },
+  { id: 5, countryId: 2, name: 'Marseille', deliveryFee: 15, estimatedTime: '72h', isActive: true },
+];
+
 export const initialOrders: Order[] = [
   {
     id: 'ORD001',
     customerName: 'John Doe',
-    address: '123 Main St, Anytown, USA',
+    address: '123 Main St',
+    country: 'Maroc',
+    city: 'Casablanca',
     email: 'john.doe@example.com',
     phone: '555-1234',
     items: [
       {
         id: '1-1672532400000',
         product: initialProducts[0],
-        // FIX: Corrected `mechanismType` from 'roller' to 'manuel' and `mountingType` from 'wall' to 'murale' to match the Customization type. Added missing `withBox` property.
         customization: { width: 120, height: 150, mechanismType: 'manuel', mechanismSide: 'right', mountingType: 'murale', withBox: false },
         quantity: 2,
         surface: 3.6,
         totalPrice: 198
       }
     ],
-    total: 213.00,
+    total: 228.00,
     status: 'Livrée',
     date: new Date('2023-10-26'),
     paymentStatus: 'Payé',
-    deliveryFee: 15.00,
+    deliveryFee: 30.00,
     callStatus: 'Appelé',
     callDate: '2023-10-25',
     paymentMethod: 'Carte bancaire',
@@ -135,30 +150,34 @@ export const initialOrders: Order[] = [
   {
     id: 'ORD002',
     customerName: 'Jane Smith',
-    address: '456 Oak Ave, Anytown, USA',
+    address: '456 Oak Ave',
+    country: 'France',
+    city: 'Paris',
     email: 'jane.smith@example.com',
     phone: '555-5678',
     items: [],
-    total: 180.00,
+    total: 190.00,
     status: 'Expédiée',
     date: new Date('2023-10-28'),
     paymentStatus: 'Payé',
-    deliveryFee: 15.00,
+    deliveryFee: 10.00,
     callStatus: 'Appelé',
     callDate: '2023-10-27'
   },
   {
     id: 'ORD003',
     customerName: 'Peter Jones',
-    address: '789 Pine Ln, Anytown, USA',
+    address: '789 Pine Ln',
+    country: 'Maroc',
+    city: 'Rabat',
     email: 'peter.jones@example.com',
     phone: '555-9012',
     items: [],
-    total: 350.75,
+    total: 385.75,
     status: 'En traitement',
     date: new Date('2023-10-30'),
     paymentStatus: 'En attente de paiement',
-    deliveryFee: 15.00
+    deliveryFee: 35.00
   },
 ];
 

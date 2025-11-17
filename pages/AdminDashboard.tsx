@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useAppContext } from '../context/AppContext';
-import { Product, Order } from '../types';
+import { Product, Order, AdminTab } from '../types';
 import ProductForm from '../components/admin/ProductForm';
 import OrderInvoice from '../components/admin/OrderInvoice';
-import { PDFDownloadIcon, SpinnerIcon, EyeIcon } from '../components/icons/Icons';
+import { PDFDownloadIcon, SpinnerIcon, EyeIcon, GlobeAltIcon } from '../components/icons/Icons';
 import OrderDetailsModal from '../components/admin/OrderDetailsModal';
 import CategoryManager from '../components/admin/CategoryManager';
 import ConfirmationManager from '../components/admin/ConfirmationManager';
+import DeliveryManager from '../components/admin/DeliveryManager';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'confirmation' | 'categories' | 'settings';
 
 const AdminDashboard: React.FC = () => {
     const { products, setProducts, orders, updateOrderStatus, termsAndConditions, setTermsAndConditions, categories, tags, logout } = useAppContext();
@@ -261,6 +261,7 @@ const AdminDashboard: React.FC = () => {
     
     const renderCategories = () => <CategoryManager />;
     const renderConfirmation = () => <ConfirmationManager />;
+    const renderDelivery = () => <DeliveryManager />;
 
     const tabContent = {
         dashboard: renderDashboard(),
@@ -268,6 +269,7 @@ const AdminDashboard: React.FC = () => {
         orders: renderOrders(),
         confirmation: renderConfirmation(),
         categories: renderCategories(),
+        livraison: renderDelivery(),
         settings: renderSettings()
     };
     
@@ -277,6 +279,7 @@ const AdminDashboard: React.FC = () => {
         orders: "Commandes",
         confirmation: "Confirmation & Paiement",
         categories: "Catégories",
+        livraison: "Livraison",
         settings: "Paramètres"
     };
 

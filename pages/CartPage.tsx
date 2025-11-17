@@ -1,21 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { TrashIcon, PlusIcon, MinusIcon } from '../components/icons/Icons';
 
 const CartPage: React.FC = () => {
-    const { cart, removeFromCart, updateCartQuantity, cartTotal, addOrder, clearCart, setCurrentPage } = useAppContext();
+    const { cart, removeFromCart, updateCartQuantity, cartTotal, addOrder, clearCart, setCurrentPage, countries, cities } = useAppContext();
     
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
         address: '',
+        country: '',
+        city: '',
         email: '',
         phone: '',
     });
+    const [deliveryFee, setDeliveryFee] = useState(0);
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const activeCountries = useMemo(() => countries.filter(c => c.isActive), [countries]);
+    const availableCities = useMemo(() => {
+        if (!customerInfo.country) return [];
+        const countryId = activeCountries.find(c => c.name === customerInfo.country)?.id;
+        if (!countryId) return [];
+        return cities.filter(city => city.countryId === countryId && city.isActive);
+    }, [cities, customerInfo.country, activeCountries]);
+
+    useEffect(() => {
+        if (customerInfo.city) {
+            const cityData = availableCities.find(c => c.name === customerInfo.city);
+            setDeliveryFee(cityData?.deliveryFee || 0);
+        } else {
+            setDeliveryFee(0);
+        }
+    }, [customerInfo.city, availableCities]);
+
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setCustomerInfo(prev => ({ ...prev, [name]: value }));
+        
+        if (name === 'country') {
+            setCustomerInfo(prev => ({ ...prev, country: value, city: '' })); // Reset city when country changes
+        } else {
+            setCustomerInfo(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleCheckout = (e: React.FormEvent) => {
@@ -23,10 +49,13 @@ const CartPage: React.FC = () => {
         addOrder({
             customerName: customerInfo.name,
             address: customerInfo.address,
+            country: customerInfo.country,
+            city: customerInfo.city,
             email: customerInfo.email,
             phone: customerInfo.phone,
             items: cart,
-            total: cartTotal,
+            total: cartTotal + deliveryFee,
+            deliveryFee,
             status: 'En attente',
         });
         clearCart();
@@ -73,6 +102,8 @@ const CartPage: React.FC = () => {
         details += ` | Montage: ${customization.mountingType} | ${customization.withBox ? 'Avec coffre' : 'Sans coffre'}`;
         return details;
     }
+    
+    const inputStyle = "w-full p-3 border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary";
 
     return (
         <div className="max-w-6xl mx-auto">
@@ -106,16 +137,25 @@ const CartPage: React.FC = () => {
                 
                 <div className="bg-brand-light p-6 rounded-xl shadow-sm h-fit">
                     <h2 className="text-2xl font-bold mb-6">Commander</h2>
-                    <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-200">
-                        <span className="text-xl font-semibold">Total</span>
-                        <span className="text-2xl font-bold text-brand-primary">{cartTotal.toFixed(2)}€</span>
+                     <div className="space-y-3 mb-6 pb-4 border-b border-slate-200">
+                        <div className="flex justify-between"><span>Sous-total</span> <span>{cartTotal.toFixed(2)}€</span></div>
+                        <div className="flex justify-between"><span>Livraison</span> <span>{deliveryFee.toFixed(2)}€</span></div>
+                        <div className="flex justify-between items-center text-xl font-semibold"><span>Total</span> <span className="text-2xl font-bold text-brand-primary">{(cartTotal + deliveryFee).toFixed(2)}€</span></div>
                     </div>
                     <form onSubmit={handleCheckout}>
                         <div className="space-y-4">
-                            <input type="text" name="name" placeholder="Nom complet" value={customerInfo.name} onChange={handleInputChange} className="w-full p-3 border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" required/>
-                            <input type="text" name="address" placeholder="Adresse de livraison" value={customerInfo.address} onChange={handleInputChange} className="w-full p-3 border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" required/>
-                            <input type="email" name="email" placeholder="Adresse e-mail" value={customerInfo.email} onChange={handleInputChange} className="w-full p-3 border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" required/>
-                            <input type="tel" name="phone" placeholder="Numéro de téléphone" value={customerInfo.phone} onChange={handleInputChange} className="w-full p-3 border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" required/>
+                            <input type="text" name="name" placeholder="Nom complet" value={customerInfo.name} onChange={handleInputChange} className={inputStyle} required/>
+                            <select name="country" value={customerInfo.country} onChange={handleInputChange} className={inputStyle} required>
+                                <option value="" disabled>Sélectionner un pays</option>
+                                {activeCountries.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                            </select>
+                             <select name="city" value={customerInfo.city} onChange={handleInputChange} className={inputStyle} required disabled={!customerInfo.country}>
+                                <option value="" disabled>Sélectionner une ville</option>
+                                {availableCities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                            </select>
+                            <input type="text" name="address" placeholder="Adresse (rue, n°, etc.)" value={customerInfo.address} onChange={handleInputChange} className={inputStyle} required/>
+                            <input type="email" name="email" placeholder="Adresse e-mail" value={customerInfo.email} onChange={handleInputChange} className={inputStyle} required/>
+                            <input type="tel" name="phone" placeholder="Numéro de téléphone" value={customerInfo.phone} onChange={handleInputChange} className={inputStyle} required/>
                         </div>
                         <button type="submit" className="mt-6 w-full py-3 bg-green-600 text-white font-bold rounded-full hover:bg-green-700 transition-colors transform hover:scale-105">
                             Passer la commande

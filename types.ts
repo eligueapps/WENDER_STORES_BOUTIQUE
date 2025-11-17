@@ -45,10 +45,27 @@ export interface CartItem {
   totalPrice: number;
 }
 
+export interface Country {
+  id: number;
+  name: string;
+  isActive: boolean;
+}
+
+export interface City {
+  id: number;
+  countryId: number;
+  name: string;
+  deliveryFee: number;
+  estimatedTime?: string;
+  isActive: boolean;
+}
+
 export interface Order {
   id: string;
   customerName: string;
   address: string;
+  country: string;
+  city: string;
   email: string;
   phone: string;
   items: CartItem[];
@@ -64,6 +81,8 @@ export interface Order {
 }
 
 export type Page = 'home' | 'products' | 'product' | 'cart' | 'about' | 'tandc' | 'contact' | 'admin' | 'login';
+
+export type AdminTab = 'dashboard' | 'products' | 'orders' | 'confirmation' | 'categories' | 'livraison' | 'settings';
 
 export interface AppContextType {
     products: Product[];
@@ -81,7 +100,7 @@ export interface AppContextType {
     clearCart: () => void;
     cartTotal: number;
     orders: Order[];
-    addOrder: (order: Omit<Order, 'id' | 'date' | 'paymentStatus' | 'deliveryFee'>) => void;
+    addOrder: (order: Omit<Order, 'id' | 'date' | 'paymentStatus'>) => void;
     updateOrderStatus: (orderId: string, status: Order['status']) => void;
     updateOrderDetails: (orderId: string, details: Partial<Order>) => void;
     currentPage: Page;
@@ -96,4 +115,13 @@ export interface AppContextType {
     isAuthenticated: boolean;
     login: (username: string, password: string) => boolean;
     logout: () => void;
+    // Delivery Management
+    countries: Country[];
+    addCountry: (country: Omit<Country, 'id'>) => { success: boolean; message: string };
+    updateCountry: (country: Country) => { success: boolean; message: string };
+    deleteCountry: (countryId: number) => { success: boolean; message: string };
+    cities: City[];
+    addCity: (city: Omit<City, 'id'>) => { success: boolean; message: string };
+    updateCity: (city: City) => { success: boolean; message: string };
+    deleteCity: (cityId: number) => void;
 }

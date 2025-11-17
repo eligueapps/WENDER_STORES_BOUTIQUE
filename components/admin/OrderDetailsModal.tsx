@@ -88,7 +88,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose, o
                                 <MailIcon/> <div><span className="font-semibold">Email:</span> {order.email}</div>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <LocationMarkerIcon/> <div><span className="font-semibold">Adresse:</span> {order.address}</div>
+                                <LocationMarkerIcon/> <div><span className="font-semibold">Adresse:</span> {order.address}, {order.city}, {order.country}</div>
                             </div>
                         </div>
 

@@ -32,6 +32,7 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, categories }) => {
                     <h2 className="font-bold text-gray-500 mb-2">FACTURÉ À</h2>
                     <p className="font-bold">{order.customerName}</p>
                     <p>{order.address}</p>
+                    <p>{order.city}, {order.country}</p>
                     <p>{order.email}</p>
                     <p>{order.phone}</p>
                 </div>

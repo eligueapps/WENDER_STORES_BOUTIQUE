@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
-import { Product, Category, CartItem, Order, Page, Customization, AppContextType } from '../types';
-import { initialProducts, initialCategories, initialTags, initialOrders, initialTermsAndConditions } from '../data';
+import { Product, Category, CartItem, Order, Page, Customization, AppContextType, Country, City } from '../types';
+import { initialProducts, initialCategories, initialTags, initialOrders, initialTermsAndConditions, initialCountries, initialCities } from '../data';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -15,6 +15,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const [termsAndConditions, setTermsAndConditions] = useState<string>(initialTermsAndConditions);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [countries, setCountries] = useState<Country[]>(initialCountries);
+    const [cities, setCities] = useState<City[]>(initialCities);
+
 
     const setCurrentPage = (page: Page, id?: number) => {
         _setCurrentPage(page);
@@ -72,15 +75,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setCart([]);
     };
 
-    const addOrder = (order: Omit<Order, 'id' | 'date' | 'paymentStatus' | 'deliveryFee'>) => {
-        const deliveryFee = 15.00;
+    const addOrder = (order: Omit<Order, 'id' | 'date' | 'paymentStatus'>) => {
         const newOrder: Order = {
             ...order,
             id: `ORD${(orders.length + 1).toString().padStart(3, '0')}`,
             date: new Date(),
             paymentStatus: 'En attente de paiement',
-            deliveryFee: deliveryFee,
-            total: order.total + deliveryFee,
         }
         setOrders(prevOrders => [newOrder, ...prevOrders]);
     };
@@ -119,9 +119,56 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     const deleteCategory = (categoryId: number) => {
-        // Here you might want to check if any product is using this category
         setCategories(prev => prev.filter(c => c.id !== categoryId));
     };
+    
+    // Delivery Management
+    const addCountry = (country: Omit<Country, 'id'>) => {
+        if (countries.some(c => c.name.toLowerCase() === country.name.toLowerCase())) {
+            return { success: false, message: "Ce pays existe déjà." };
+        }
+        const newCountry = { ...country, id: Date.now() };
+        setCountries(prev => [newCountry, ...prev]);
+        return { success: true, message: "Pays ajouté avec succès." };
+    };
+
+    const updateCountry = (country: Country) => {
+        if (countries.some(c => c.id !== country.id && c.name.toLowerCase() === country.name.toLowerCase())) {
+            return { success: false, message: "Un autre pays avec ce nom existe déjà." };
+        }
+        setCountries(prev => prev.map(c => c.id === country.id ? country : c));
+        return { success: true, message: "Pays mis à jour avec succès." };
+    };
+
+    const deleteCountry = (countryId: number) => {
+        if (cities.some(c => c.countryId === countryId && c.isActive)) {
+            return { success: false, message: "Impossible de supprimer un pays avec des villes actives." };
+        }
+        setCountries(prev => prev.filter(c => c.id !== countryId));
+        return { success: true, message: "Pays supprimé." };
+    };
+
+    const addCity = (city: Omit<City, 'id'>) => {
+        if (cities.some(c => c.name.toLowerCase() === city.name.toLowerCase() && c.countryId === city.countryId)) {
+            return { success: false, message: "Cette ville existe déjà dans ce pays." };
+        }
+        const newCity = { ...city, id: Date.now() };
+        setCities(prev => [newCity, ...prev]);
+        return { success: true, message: "Ville ajoutée avec succès." };
+    };
+
+    const updateCity = (city: City) => {
+        if (cities.some(c => c.id !== city.id && c.name.toLowerCase() === city.name.toLowerCase() && c.countryId === city.countryId)) {
+            return { success: false, message: "Une autre ville avec ce nom existe déjà dans ce pays." };
+        }
+        setCities(prev => prev.map(c => c.id === city.id ? city : c));
+        return { success: true, message: "Ville mise à jour avec succès." };
+    };
+    
+    const deleteCity = (cityId: number) => {
+        setCities(prev => prev.filter(c => c.id !== cityId));
+    };
+
 
     const cartTotal = useMemo(() => cart.reduce((total, item) => total + item.totalPrice, 0), [cart]);
 
@@ -152,7 +199,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setSearchTerm,
         isAuthenticated,
         login,
-        logout
+        logout,
+        countries,
+        addCountry,
+        updateCountry,
+        deleteCountry,
+        cities,
+        addCity,
+        updateCity,
+        deleteCity
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
