@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { SearchIcon, ShoppingCartIcon, MenuIcon, XIcon, UserCircleIcon, ChevronDownIcon } from './icons/Icons';
+import { SearchIcon, ShoppingCartIcon, MenuIcon, XIcon, UserCircleIcon, ChevronDownIcon, WenderStoresLogo } from './icons/Icons';
 import { Currency } from '../types';
 
 const Header: React.FC = () => {
@@ -87,8 +87,8 @@ const Header: React.FC = () => {
         <header className="bg-brand-light shadow-sm sticky top-0 z-50">
             <div className="container mx-auto px-4 py-3">
                 <div className="flex justify-between items-center">
-                    <div className="text-3xl font-extrabold text-brand-primary cursor-pointer" onClick={() => setCurrentPage('home')}>
-                        WENDER STORES
+                    <div onClick={() => setCurrentPage('home')} className="cursor-pointer">
+                        <WenderStoresLogo className="h-8" />
                     </div>
 
                     <nav className="hidden lg:flex items-center space-x-6">

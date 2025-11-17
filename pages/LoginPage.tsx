@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
+import { WenderStoresLogo } from '../components/icons/Icons';
 
 const LoginPage: React.FC = () => {
     const { login, setCurrentPage } = useAppContext();
@@ -24,7 +25,7 @@ const LoginPage: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-brand-accent p-4">
             <div className="w-full max-w-sm bg-brand-light p-8 rounded-2xl shadow-lg animate-fade-in">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-extrabold text-brand-primary">WENDER STORES</h1>
+                    <WenderStoresLogo className="h-10 mx-auto" />
                     <p className="text-gray-500 mt-2">Accès Administrateur</p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6">

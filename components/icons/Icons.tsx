@@ -226,3 +226,30 @@ export const GlobeAltIcon: React.FC = () => (
       <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 009-9m-9 9a9 9 0 00-9-9" />
     </svg>
 );
+
+export const WenderStoresLogo: React.FC<{ className?: string }> = ({ className }) => (
+    <svg
+      viewBox="0 0 340 40"
+      className={className}
+      aria-label="Wender Stores Logo"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title>Wender Stores Logo</title>
+      <g id="icon">
+        <rect x="4" y="5" width="12" height="30" rx="6" fill="#1E293B" />
+        <rect x="20" y="5" width="12" height="30" rx="6" fill="#F97316" />
+        <rect x="36" y="5" width="12" height="30" rx="6" fill="#1E293B" />
+      </g>
+      <text
+        x="64"
+        y="32"
+        fontFamily="'Inter', sans-serif"
+        fontSize="32"
+        fontWeight="800"
+        letterSpacing="-1.5"
+        fill="#1E293B"
+      >
+        WENDER STORES
+      </text>
+    </svg>
+);

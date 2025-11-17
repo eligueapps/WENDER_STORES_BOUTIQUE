@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
-import { FacebookIcon, InstagramIcon, TwitterIcon } from './icons/Icons';
+import { FacebookIcon, InstagramIcon, TwitterIcon, WenderStoresLogo } from './icons/Icons';
 
 const Footer: React.FC = () => {
     const { setCurrentPage } = useAppContext();
@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* About */}
                     <div>
-                        <h3 className="text-xl font-extrabold text-brand-primary mb-4">WENDER STORES</h3>
+                        <WenderStoresLogo className="h-8 mb-4" />
                         <p className="text-sm text-gray-600">Solutions de fenêtrage sur mesure avec élégance et précision.</p>
                     </div>
 

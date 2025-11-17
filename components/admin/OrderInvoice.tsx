@@ -1,5 +1,6 @@
 import React from 'react';
 import { Order, Category, Currency } from '../../types';
+import { WenderStoresLogo } from '../icons/Icons';
 
 interface OrderInvoiceProps {
     order: Order;
@@ -36,9 +37,7 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, categories, conversi
         <div className="bg-white p-8 font-sans text-sm text-gray-800" style={{ width: '210mm' }}>
             {/* Header */}
             <header className="flex justify-between items-center pb-4 border-b-2 border-brand-primary">
-                <div className="text-3xl font-extrabold text-brand-primary">
-                    WENDER STORES
-                </div>
+                <WenderStoresLogo className="h-10" />
                 <div>
                     <h1 className="text-3xl font-bold text-right">FACTURE</h1>
                     <p className="text-right text-gray-500 mt-1">{order.id}</p>
