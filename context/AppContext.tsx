@@ -1,35 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
-import { Product, Category, CartItem, Order, Page, Customization } from '../types';
+import { Product, Category, CartItem, Order, Page, Customization, AppContextType } from '../types';
 import { initialProducts, initialCategories, initialTags, initialOrders, initialTermsAndConditions } from '../data';
-
-interface AppContextType {
-    products: Product[];
-    setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-    categories: Category[];
-    addCategory: (category: Omit<Category, 'id'>) => { success: boolean, message: string };
-    updateCategory: (category: Category) => { success: boolean, message: string };
-    deleteCategory: (categoryId: number) => void;
-    tags: string[];
-    cart: CartItem[];
-    addToCart: (product: Product, customization: Customization, quantity: number) => void;
-    removeFromCart: (cartItemId: string) => void;
-    updateCartQuantity: (cartItemId: string, newQuantity: number) => void;
-    clearCart: () => void;
-    cartTotal: number;
-    orders: Order[];
-    addOrder: (order: Omit<Order, 'id' | 'date' | 'paymentStatus' | 'deliveryFee'>) => void;
-    updateOrderStatus: (orderId: string, status: Order['status']) => void;
-    currentPage: Page;
-    currentPageId: number | null;
-    setCurrentPage: (page: Page, id?: number) => void;
-    termsAndConditions: string;
-    setTermsAndConditions: React.Dispatch<React.SetStateAction<string>>;
-    searchTerm: string;
-    setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-    isAuthenticated: boolean;
-    login: (username: string, password: string) => boolean;
-    logout: () => void;
-}
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -107,7 +78,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             ...order,
             id: `ORD${(orders.length + 1).toString().padStart(3, '0')}`,
             date: new Date(),
-            paymentStatus: 'Payé',
+            paymentStatus: 'En attente de paiement',
             deliveryFee: deliveryFee,
             total: order.total + deliveryFee,
         }
@@ -116,6 +87,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const updateOrderStatus = (orderId: string, status: Order['status']) => {
         setOrders(prevOrders => prevOrders.map(order => order.id === orderId ? { ...order, status } : order));
+    };
+
+    const updateOrderDetails = (orderId: string, details: Partial<Order>) => {
+        setOrders(prevOrders => prevOrders.map(order => 
+            order.id === orderId ? { ...order, ...details } : order
+        ));
     };
 
     // Category Management
@@ -148,7 +125,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const cartTotal = useMemo(() => cart.reduce((total, item) => total + item.totalPrice, 0), [cart]);
 
-    const value = {
+    const value: AppContextType = {
         products,
         setProducts,
         categories,
@@ -165,6 +142,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         orders,
         addOrder,
         updateOrderStatus,
+        updateOrderDetails,
         currentPage,
         currentPageId,
         setCurrentPage,

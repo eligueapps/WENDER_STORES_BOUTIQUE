@@ -28,6 +28,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose, o
         'En traitement': 'bg-blue-100 text-blue-800',
         'Expédiée': 'bg-purple-100 text-purple-800',
         'Livrée': 'bg-green-100 text-green-800',
+        // FIX: Added missing 'Annulée' status to the statusColors object to cover all possible order statuses.
+        'Annulée': 'bg-red-100 text-red-800',
     };
     
     const paymentStatusColors: { [key in Order['paymentStatus']]: string } = {

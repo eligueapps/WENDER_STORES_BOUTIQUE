@@ -7,8 +7,9 @@ import OrderInvoice from '../components/admin/OrderInvoice';
 import { PDFDownloadIcon, SpinnerIcon, EyeIcon } from '../components/icons/Icons';
 import OrderDetailsModal from '../components/admin/OrderDetailsModal';
 import CategoryManager from '../components/admin/CategoryManager';
+import ConfirmationManager from '../components/admin/ConfirmationManager';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'categories' | 'settings';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'confirmation' | 'categories' | 'settings';
 
 const AdminDashboard: React.FC = () => {
     const { products, setProducts, orders, updateOrderStatus, termsAndConditions, setTermsAndConditions, categories, tags, logout } = useAppContext();
@@ -28,6 +29,7 @@ const AdminDashboard: React.FC = () => {
         'En traitement': 'bg-blue-100 text-blue-800',
         'Expédiée': 'bg-purple-100 text-purple-800',
         'Livrée': 'bg-green-100 text-green-800',
+        'Annulée': 'bg-red-100 text-red-800',
     };
 
     const handleProductSave = (productToSave: Product) => {
@@ -211,6 +213,7 @@ const AdminDashboard: React.FC = () => {
                                             <option value="En traitement">En traitement</option>
                                             <option value="Expédiée">Expédiée</option>
                                             <option value="Livrée">Livrée</option>
+                                            <option value="Annulée">Annulée</option>
                                         </select>
                                     </td>
                                     <td className="p-2 flex items-center space-x-2">
@@ -257,11 +260,13 @@ const AdminDashboard: React.FC = () => {
     );
     
     const renderCategories = () => <CategoryManager />;
+    const renderConfirmation = () => <ConfirmationManager />;
 
     const tabContent = {
         dashboard: renderDashboard(),
         products: renderProducts(),
         orders: renderOrders(),
+        confirmation: renderConfirmation(),
         categories: renderCategories(),
         settings: renderSettings()
     };
@@ -270,6 +275,7 @@ const AdminDashboard: React.FC = () => {
         dashboard: "Tableau de bord",
         products: "Produits",
         orders: "Commandes",
+        confirmation: "Confirmation & Paiement",
         categories: "Catégories",
         settings: "Paramètres"
     };

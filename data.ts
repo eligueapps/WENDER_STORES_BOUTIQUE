@@ -127,7 +127,10 @@ export const initialOrders: Order[] = [
     status: 'Livrée',
     date: new Date('2023-10-26'),
     paymentStatus: 'Payé',
-    deliveryFee: 15.00
+    deliveryFee: 15.00,
+    callStatus: 'Appelé',
+    callDate: '2023-10-25',
+    paymentMethod: 'Carte bancaire',
   },
   {
     id: 'ORD002',
@@ -141,6 +144,8 @@ export const initialOrders: Order[] = [
     date: new Date('2023-10-28'),
     paymentStatus: 'Payé',
     deliveryFee: 15.00,
+    callStatus: 'Appelé',
+    callDate: '2023-10-27'
   },
   {
     id: 'ORD003',
