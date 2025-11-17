@@ -64,6 +64,16 @@ const CartPage: React.FC = () => {
         );
     }
 
+    const formatCustomization = (item: (typeof cart)[0]) => {
+        const { customization } = item;
+        let details = `${customization.width}cm x ${customization.height}cm | ${customization.mechanismType}`;
+        if (customization.mechanismType === 'manuel') {
+            details += ` | Côté: ${customization.mechanismSide}`;
+        }
+        details += ` | Montage: ${customization.mountingType} | ${customization.withBox ? 'Avec coffre' : 'Sans coffre'}`;
+        return details;
+    }
+
     return (
         <div className="max-w-6xl mx-auto">
             <h1 className="text-4xl font-bold text-center text-brand-dark mb-10">Panier d'achat</h1>
@@ -77,7 +87,7 @@ const CartPage: React.FC = () => {
                                 <div className="flex-grow">
                                     <h3 className="text-lg font-bold">{item.product.name}</h3>
                                     <p className="text-sm text-gray-500 capitalize">
-                                        {item.customization.width}cm x {item.customization.height}cm | {item.customization.mechanismType} | Côté: {item.customization.mechanismSide} | Montage: {item.customization.mountingType}
+                                        {formatCustomization(item)}
                                     </p>
                                     <div className="flex items-center mt-2">
                                         <button onClick={() => updateCartQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="p-1.5 border rounded-full disabled:opacity-50 hover:bg-slate-100"><MinusIcon/></button>

@@ -63,8 +63,11 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, categories }) => {
                                             <p className="text-xs text-gray-500">{getCategoryName(item.product.categoryId)}</p>
                                             <div className="mt-2 text-xs text-gray-600 space-y-0.5" style={{ pageBreakInside: 'avoid' }}>
                                                 <p><span className="font-semibold">Dimensions :</span> {item.customization.width}cm x {item.customization.height}cm</p>
-                                                <p><span className="font-semibold">Mécanisme :</span> {item.customization.mechanismType} ({item.customization.mechanismSide})</p>
+                                                <p><span className="font-semibold">Mécanisme :</span> {item.customization.mechanismType}
+                                                    {item.customization.mechanismType === 'manuel' && ` (${item.customization.mechanismSide})`}
+                                                </p>
                                                 <p><span className="font-semibold">Montage :</span> {item.customization.mountingType}</p>
+                                                <p><span className="font-semibold">Finition :</span> {item.customization.withBox ? 'Avec coffre' : 'Sans coffre'}</p>
                                                 <p><span className="font-semibold">Surface :</span> {item.surface.toFixed(2)} m²</p>
                                             </div>
                                         </div>

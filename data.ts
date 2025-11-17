@@ -116,7 +116,8 @@ export const initialOrders: Order[] = [
       {
         id: '1-1672532400000',
         product: initialProducts[0],
-        customization: { width: 120, height: 150, mechanismType: 'roller', mechanismSide: 'right', mountingType: 'wall' },
+        // FIX: Corrected `mechanismType` from 'roller' to 'manuel' and `mountingType` from 'wall' to 'murale' to match the Customization type. Added missing `withBox` property.
+        customization: { width: 120, height: 150, mechanismType: 'manuel', mechanismSide: 'right', mountingType: 'murale', withBox: false },
         quantity: 2,
         surface: 3.6,
         totalPrice: 198

@@ -109,8 +109,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose, o
                                                 <DetailItem icon={<RulerIcon />} label="Largeur" value={`${item.customization.width} cm`} />
                                                 <DetailItem icon={<RulerIcon />} label="Hauteur" value={`${item.customization.height} cm`} />
                                                 <DetailItem icon={<CogIcon />} label="Mécanisme" value={item.customization.mechanismType} />
-                                                <DetailItem icon={<ArrowsRightLeftIcon />} label="Côté" value={item.customization.mechanismSide} />
+                                                {item.customization.mechanismType === 'manuel' && (
+                                                    <DetailItem icon={<ArrowsRightLeftIcon />} label="Côté" value={item.customization.mechanismSide} />
+                                                )}
                                                 <DetailItem icon={<WrenchScrewdriverIcon />} label="Montage" value={item.customization.mountingType} />
+                                                <DetailItem icon={<CogIcon />} label="Finition" value={item.customization.withBox ? 'Avec coffre' : 'Sans coffre'} />
                                             </div>
                                         </div>
                                     </div>

@@ -27,9 +27,10 @@ export interface Category {
 export interface Customization {
   width: number;
   height: number;
-  mechanismType: 'roller' | 'venetian' | 'pleated';
+  mechanismType: 'manuel' | 'electrique';
   mechanismSide: 'left' | 'right';
-  mountingType: 'wall' | 'ceiling';
+  mountingType: 'murale' | 'plafond';
+  withBox: boolean;
 }
 
 export interface CartItem {
