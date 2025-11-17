@@ -1,5 +1,5 @@
 import React from 'react';
-import { Order } from '../../types';
+import { Order, Currency } from '../../types';
 import {
     XIcon,
     UserIcon,
@@ -13,6 +13,7 @@ import {
     PDFDownloadIcon,
     SpinnerIcon
 } from '../icons/Icons';
+import { useAppContext } from '../../context/AppContext';
 
 interface OrderDetailsModalProps {
     order: Order;
@@ -22,6 +23,7 @@ interface OrderDetailsModalProps {
 }
 
 const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose, onDownloadPDF, isDownloading }) => {
+    const { convertPrice } = useAppContext();
 
     const statusColors: { [key in Order['status']]: string } = {
         'En attente': 'bg-yellow-100 text-yellow-800',
@@ -72,6 +74,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose, o
                              <h3 className="font-bold text-gray-500 text-sm mb-2">Statut du paiement</h3>
                             <span className={`px-2.5 py-1 text-sm font-semibold rounded-full ${paymentStatusColors[order.paymentStatus]}`}>{order.paymentStatus}</span>
                          </div>
+                         <div className="bg-white p-4 rounded-lg shadow-sm">
+                            <h3 className="font-bold text-gray-500 text-sm mb-2">Total de la commande</h3>
+                            <p className="font-bold text-xl">{convertPrice(order.total, order.currency)}</p>
+                         </div>
                     </section>
                     
                     {/* Customer & Products */}
@@ -103,7 +109,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose, o
                                                 <p className="font-bold">{item.product.name}</p>
                                                 <p className="text-sm text-gray-500">Quantité: {item.quantity}</p>
                                             </div>
-                                            <p className="font-bold text-brand-primary">{item.totalPrice.toFixed(2)}€</p>
+                                            <p className="font-bold text-brand-primary">{convertPrice(item.totalPrice, order.currency)}</p>
                                         </div>
                                         <div className="bg-brand-accent p-3 rounded-md mt-3 space-y-2">
                                             <h4 className="font-semibold text-sm">Configuration sur mesure :</h4>
@@ -129,9 +135,9 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose, o
                         <div className="w-full md:w-1/2 lg:w-1/3 bg-white p-5 rounded-lg shadow-sm">
                              <h3 className="text-lg font-bold border-b pb-2 mb-2">Résumé financier</h3>
                              <div className="space-y-2">
-                                <div className="flex justify-between"><span>Sous-total</span> <span>{subtotal.toFixed(2)}€</span></div>
-                                <div className="flex justify-between"><span>Livraison</span> <span>{order.deliveryFee.toFixed(2)}€</span></div>
-                                <div className="flex justify-between font-bold text-lg pt-2 border-t"><span>Total</span> <span>{order.total.toFixed(2)}€</span></div>
+                                <div className="flex justify-between"><span>Sous-total</span> <span>{convertPrice(subtotal, order.currency)}</span></div>
+                                <div className="flex justify-between"><span>Livraison</span> <span>{convertPrice(order.deliveryFee, order.currency)}</span></div>
+                                <div className="flex justify-between font-bold text-lg pt-2 border-t"><span>Total ({order.currency})</span> <span>{convertPrice(order.total, order.currency)}</span></div>
                              </div>
                         </div>
                     </section>

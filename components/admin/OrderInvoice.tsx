@@ -1,12 +1,31 @@
 import React from 'react';
-import { Order, Category } from '../../types';
+import { Order, Category, Currency } from '../../types';
 
 interface OrderInvoiceProps {
     order: Order;
     categories: Category[];
+    conversionRates: { [key in Currency]?: number };
 }
 
-const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, categories }) => {
+const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, categories, conversionRates }) => {
+    
+    const convertPriceForInvoice = (priceInMAD: number): string => {
+        const targetCurrency = order.currency;
+        const rate = conversionRates[targetCurrency] || 1;
+        const convertedPrice = priceInMAD * rate;
+
+        const locale = {
+            'MAD': 'fr-MA',
+            'EUR': 'fr-FR',
+            'USD': 'en-US'
+        }[targetCurrency];
+
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: targetCurrency,
+        }).format(convertedPrice);
+    };
+
     const subtotal = order.items.reduce((acc, item) => acc + item.totalPrice, 0);
 
     const getCategoryName = (id: number) => {
@@ -75,7 +94,7 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, categories }) => {
                                     </div>
                                 </td>
                                 <td className="p-3 text-right align-top">{item.quantity}</td>
-                                <td className="p-3 text-right align-top font-semibold">{item.totalPrice.toFixed(2)}€</td>
+                                <td className="p-3 text-right align-top font-semibold">{convertPriceForInvoice(item.totalPrice)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -87,15 +106,15 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, categories }) => {
                 <div className="w-1/2">
                     <div className="flex justify-between py-2">
                         <span className="font-bold text-gray-600">Sous-total :</span>
-                        <span>{subtotal.toFixed(2)}€</span>
+                        <span>{convertPriceForInvoice(subtotal)}</span>
                     </div>
                     <div className="flex justify-between py-2">
                         <span className="font-bold text-gray-600">Frais de livraison :</span>
-                        <span>{order.deliveryFee.toFixed(2)}€</span>
+                        <span>{convertPriceForInvoice(order.deliveryFee)}</span>
                     </div>
                     <div className="flex justify-between py-3 mt-2 border-t-2 border-brand-primary">
                         <span className="text-xl font-bold">Total :</span>
-                        <span className="text-xl font-bold">{order.total.toFixed(2)}€</span>
+                        <span className="text-xl font-bold">{convertPriceForInvoice(order.total)}</span>
                     </div>
                 </div>
             </section>

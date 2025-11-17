@@ -42,7 +42,7 @@ export interface CartItem {
   customization: Customization;
   quantity: number;
   surface: number;
-  totalPrice: number;
+  totalPrice: number; // Stored in base currency (MAD)
 }
 
 export interface Country {
@@ -60,6 +60,8 @@ export interface City {
   isActive: boolean;
 }
 
+export type Currency = 'MAD' | 'EUR' | 'USD';
+
 export interface Order {
   id: string;
   customerName: string;
@@ -69,11 +71,12 @@ export interface Order {
   email: string;
   phone: string;
   items: CartItem[];
-  total: number;
+  total: number; // Stored in base currency (MAD)
   status: 'En attente' | 'En traitement' | 'Expédiée' | 'Livrée' | 'Annulée';
   date: Date;
   paymentStatus: 'Payé' | 'En attente de paiement' | 'Remboursé';
-  deliveryFee: number;
+  deliveryFee: number; // Stored in base currency (MAD)
+  currency: Currency;
   // New fields for confirmation workflow
   callDate?: string;
   callStatus?: 'Appelé' | 'À rappeler' | 'Non joignable' | 'Client non intéressé';
@@ -82,7 +85,7 @@ export interface Order {
 
 export type Page = 'home' | 'products' | 'product' | 'cart' | 'about' | 'tandc' | 'contact' | 'admin' | 'login';
 
-export type AdminTab = 'dashboard' | 'products' | 'orders' | 'confirmation' | 'categories' | 'livraison' | 'settings';
+export type AdminTab = 'dashboard' | 'products' | 'orders' | 'confirmation' | 'categories' | 'livraison' | 'devises' | 'settings';
 
 export interface AppContextType {
     products: Product[];
@@ -100,7 +103,7 @@ export interface AppContextType {
     clearCart: () => void;
     cartTotal: number;
     orders: Order[];
-    addOrder: (order: Omit<Order, 'id' | 'date' | 'paymentStatus'>) => void;
+    addOrder: (order: Omit<Order, 'id' | 'date' | 'paymentStatus' | 'currency'>) => void;
     updateOrderStatus: (orderId: string, status: Order['status']) => void;
     updateOrderDetails: (orderId: string, details: Partial<Order>) => void;
     currentPage: Page;
@@ -124,4 +127,11 @@ export interface AppContextType {
     addCity: (city: Omit<City, 'id'>) => { success: boolean; message: string };
     updateCity: (city: City) => { success: boolean; message: string };
     deleteCity: (cityId: number) => void;
+    // Currency Management
+    currencies: Currency[];
+    currentCurrency: Currency;
+    setCurrentCurrency: (currency: Currency) => void;
+    conversionRates: { [key in Currency]?: number };
+    updateConversionRates: (rates: { [key in Currency]?: number }) => void;
+    convertPrice: (priceInMAD: number, targetCurrency?: Currency) => string;
 }

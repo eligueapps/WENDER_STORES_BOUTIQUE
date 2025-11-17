@@ -1,13 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { SearchIcon, ShoppingCartIcon, MenuIcon, XIcon, UserCircleIcon } from './icons/Icons';
+import { SearchIcon, ShoppingCartIcon, MenuIcon, XIcon, UserCircleIcon, ChevronDownIcon } from './icons/Icons';
+import { Currency } from '../types';
 
 const Header: React.FC = () => {
-    const { setCurrentPage, cart, tags, products, setSearchTerm: setGlobalSearchTerm, isAuthenticated } = useAppContext();
+    const { setCurrentPage, cart, tags, products, setSearchTerm: setGlobalSearchTerm, isAuthenticated, currencies, currentCurrency, setCurrentCurrency } = useAppContext();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(true);
+    const [isCurrencyDropdownOpen, setIsCurrencyDropdownOpen] = useState(false);
 
     const allSearchableTerms = useMemo(() => {
         const productTitles = products.map(p => p.name);
@@ -42,6 +44,11 @@ const Header: React.FC = () => {
     const handleSuggestionClick = (term: string) => {
         handleSearchSubmit(term);
     };
+    
+    const handleCurrencyChange = (currency: Currency) => {
+        setCurrentCurrency(currency);
+        setIsCurrencyDropdownOpen(false);
+    }
 
     const navLinks = [
         { name: 'Accueil', page: 'home' as const },
@@ -93,6 +100,20 @@ const Header: React.FC = () => {
                     </nav>
 
                     <div className="flex items-center space-x-4">
+                        <div className="relative">
+                            <button onClick={() => setIsCurrencyDropdownOpen(prev => !prev)} className="flex items-center font-semibold text-sm">
+                                {currentCurrency} <ChevronDownIcon />
+                            </button>
+                            {isCurrencyDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-24 bg-white rounded-md shadow-lg z-20">
+                                    {currencies.map(c => (
+                                        <button key={c} onClick={() => handleCurrencyChange(c)} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            {c}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                          <form onSubmit={handleFormSubmit} className="relative hidden md:block w-56">
                            {searchBar}
                         </form>

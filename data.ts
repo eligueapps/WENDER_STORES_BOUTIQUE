@@ -1,4 +1,4 @@
-import { Product, Category, Order, Country, City } from './types';
+import { Product, Category, Order, Country, City, Currency } from './types';
 
 export const initialCategories: Category[] = [
   { 
@@ -34,7 +34,7 @@ export const initialProducts: Product[] = [
     id: 1,
     name: 'Linen Roller Blind',
     description: 'A beautiful and simple linen roller blind, perfect for creating a soft, natural look in any room. Provides privacy while gently filtering light.',
-    pricePerSqM: 55.00,
+    pricePerSqM: 550.00, // Price in MAD
     images: ['https://picsum.photos/seed/blind1/800/600', 'https://picsum.photos/seed/blind1-detail/800/600'],
     categoryId: 1,
     tags: ['salon', 'chambre', 'tamisant', 'moderne'],
@@ -50,7 +50,7 @@ export const initialProducts: Product[] = [
     id: 2,
     name: 'Aluminum Venetian Blind',
     description: 'Sleek and durable, our aluminum Venetian blinds offer precise light control with a modern aesthetic. Ideal for kitchens and offices.',
-    pricePerSqM: 65.00,
+    pricePerSqM: 650.00, // Price in MAD
     images: ['https://picsum.photos/seed/blind2/800/600', 'https://picsum.photos/seed/blind2-detail/800/600'],
     categoryId: 2,
     tags: ['cuisine', 'bureau', 'moderne'],
@@ -62,7 +62,7 @@ export const initialProducts: Product[] = [
     id: 3,
     name: 'Blackout Pleated Curtain',
     description: 'Experience complete darkness with our premium blackout pleated curtains. Perfect for bedrooms and media rooms for undisturbed rest.',
-    pricePerSqM: 72.50,
+    pricePerSqM: 725.50, // Price in MAD
     images: ['https://picsum.photos/seed/curtain1/800/600', 'https://picsum.photos/seed/curtain1-detail/800/600'],
     categoryId: 3,
     tags: ['chambre', 'occultant'],
@@ -74,7 +74,7 @@ export const initialProducts: Product[] = [
     id: 4,
     name: 'Classic Roman Shade',
     description: 'Add a touch of elegance with our classic Roman shades. They stack up evenly when being opened, and are visibly smooth when closed.',
-    pricePerSqM: 85.00,
+    pricePerSqM: 850.00, // Price in MAD
     images: ['https://picsum.photos/seed/shade1/800/600', 'https://picsum.photos/seed/shade1-detail/800/600'],
     categoryId: 4,
     tags: ['salon', 'classique'],
@@ -85,7 +85,7 @@ export const initialProducts: Product[] = [
     id: 5,
     name: 'Wooden Venetian Blind',
     description: 'Bring the warmth of natural wood into your home. Our wooden Venetian blinds are stylish, timeless, and offer excellent light control.',
-    pricePerSqM: 95.00,
+    pricePerSqM: 950.00, // Price in MAD
     images: ['https://picsum.photos/seed/blind3/800/600', 'https://picsum.photos/seed/blind3-detail/800/600'],
     categoryId: 2,
     tags: ['salon', 'bureau', 'classique'],
@@ -96,7 +96,7 @@ export const initialProducts: Product[] = [
     id: 6,
     name: 'Sheer Pleated Curtain',
     description: 'Light and airy, these sheer pleated curtains allow maximum daylight while maintaining a degree of privacy. Perfect for a layered window treatment.',
-    pricePerSqM: 48.00,
+    pricePerSqM: 480.00, // Price in MAD
     images: ['https://picsum.photos/seed/curtain2/800/600', 'https://picsum.photos/seed/curtain2-detail/800/600'],
     categoryId: 3,
     tags: ['salon', 'tamisant'],
@@ -108,16 +108,26 @@ export const initialProducts: Product[] = [
 export const initialCountries: Country[] = [
   { id: 1, name: 'Maroc', isActive: true },
   { id: 2, name: 'France', isActive: true },
-  { id: 3, name: 'Belgique', isActive: false },
+  { id: 3, name: 'USA', isActive: true },
 ];
 
 export const initialCities: City[] = [
   { id: 1, countryId: 1, name: 'Casablanca', deliveryFee: 30, estimatedTime: '24h', isActive: true },
   { id: 2, countryId: 1, name: 'Rabat', deliveryFee: 35, estimatedTime: '24h', isActive: true },
   { id: 3, countryId: 1, name: 'Marrakech', deliveryFee: 40, estimatedTime: '48h', isActive: false },
-  { id: 4, countryId: 2, name: 'Paris', deliveryFee: 10, estimatedTime: '48h', isActive: true },
-  { id: 5, countryId: 2, name: 'Marseille', deliveryFee: 15, estimatedTime: '72h', isActive: true },
+  { id: 4, countryId: 2, name: 'Paris', deliveryFee: 100, estimatedTime: '48h', isActive: true }, // price in MAD
+  { id: 5, countryId: 2, name: 'Marseille', deliveryFee: 150, estimatedTime: '72h', isActive: true }, // price in MAD
+  { id: 6, countryId: 3, name: 'New York', deliveryFee: 250, estimatedTime: '96h', isActive: true }, // price in MAD
 ];
+
+export const initialCurrencies: Currency[] = ['MAD', 'EUR', 'USD'];
+
+export const initialConversionRates: { [key in Currency]?: number } = {
+    MAD: 1,
+    EUR: 0.092,
+    USD: 0.10,
+};
+
 
 export const initialOrders: Order[] = [
   {
@@ -135,14 +145,15 @@ export const initialOrders: Order[] = [
         customization: { width: 120, height: 150, mechanismType: 'manuel', mechanismSide: 'right', mountingType: 'murale', withBox: false },
         quantity: 2,
         surface: 3.6,
-        totalPrice: 198
+        totalPrice: 1980
       }
     ],
-    total: 228.00,
+    total: 2010.00,
     status: 'Livrée',
     date: new Date('2023-10-26'),
     paymentStatus: 'Payé',
     deliveryFee: 30.00,
+    currency: 'MAD',
     callStatus: 'Appelé',
     callDate: '2023-10-25',
     paymentMethod: 'Carte bancaire',
@@ -156,11 +167,12 @@ export const initialOrders: Order[] = [
     email: 'jane.smith@example.com',
     phone: '555-5678',
     items: [],
-    total: 190.00,
+    total: 1900.00,
     status: 'Expédiée',
     date: new Date('2023-10-28'),
     paymentStatus: 'Payé',
-    deliveryFee: 10.00,
+    deliveryFee: 100.00,
+    currency: 'EUR',
     callStatus: 'Appelé',
     callDate: '2023-10-27'
   },
@@ -173,11 +185,12 @@ export const initialOrders: Order[] = [
     email: 'peter.jones@example.com',
     phone: '555-9012',
     items: [],
-    total: 385.75,
+    total: 3857.50,
     status: 'En traitement',
     date: new Date('2023-10-30'),
     paymentStatus: 'En attente de paiement',
-    deliveryFee: 35.00
+    deliveryFee: 35.00,
+    currency: 'MAD',
   },
 ];
 

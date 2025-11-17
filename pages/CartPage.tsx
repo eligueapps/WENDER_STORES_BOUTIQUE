@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import { TrashIcon, PlusIcon, MinusIcon } from '../components/icons/Icons';
 
 const CartPage: React.FC = () => {
-    const { cart, removeFromCart, updateCartQuantity, cartTotal, addOrder, clearCart, setCurrentPage, countries, cities } = useAppContext();
+    const { cart, removeFromCart, updateCartQuantity, cartTotal, addOrder, clearCart, setCurrentPage, countries, cities, convertPrice } = useAppContext();
     
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
@@ -13,7 +13,7 @@ const CartPage: React.FC = () => {
         email: '',
         phone: '',
     });
-    const [deliveryFee, setDeliveryFee] = useState(0);
+    const [deliveryFee, setDeliveryFee] = useState(0); // in MAD
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
 
     const activeCountries = useMemo(() => countries.filter(c => c.isActive), [countries]);
@@ -127,7 +127,7 @@ const CartPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end justify-between">
-                                    <p className="text-lg font-bold text-brand-primary">{item.totalPrice.toFixed(2)}€</p>
+                                    <p className="text-lg font-bold text-brand-primary">{convertPrice(item.totalPrice)}</p>
                                     <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50"><TrashIcon/></button>
                                 </div>
                             </div>
@@ -138,9 +138,9 @@ const CartPage: React.FC = () => {
                 <div className="bg-brand-light p-6 rounded-xl shadow-sm h-fit">
                     <h2 className="text-2xl font-bold mb-6">Commander</h2>
                      <div className="space-y-3 mb-6 pb-4 border-b border-slate-200">
-                        <div className="flex justify-between"><span>Sous-total</span> <span>{cartTotal.toFixed(2)}€</span></div>
-                        <div className="flex justify-between"><span>Livraison</span> <span>{deliveryFee.toFixed(2)}€</span></div>
-                        <div className="flex justify-between items-center text-xl font-semibold"><span>Total</span> <span className="text-2xl font-bold text-brand-primary">{(cartTotal + deliveryFee).toFixed(2)}€</span></div>
+                        <div className="flex justify-between"><span>Sous-total</span> <span>{convertPrice(cartTotal)}</span></div>
+                        <div className="flex justify-between"><span>Livraison</span> <span>{convertPrice(deliveryFee)}</span></div>
+                        <div className="flex justify-between items-center text-xl font-semibold"><span>Total</span> <span className="text-2xl font-bold text-brand-primary">{convertPrice(cartTotal + deliveryFee)}</span></div>
                     </div>
                     <form onSubmit={handleCheckout}>
                         <div className="space-y-4">

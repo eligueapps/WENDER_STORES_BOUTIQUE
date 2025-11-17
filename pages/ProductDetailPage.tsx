@@ -41,7 +41,7 @@ const infoContent = {
 
 
 const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId }) => {
-    const { products, addToCart, setCurrentPage } = useAppContext();
+    const { products, addToCart, setCurrentPage, convertPrice } = useAppContext();
     const product = products.find(p => p.id === productId);
 
     const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -146,7 +146,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId }) => {
                     {/* Product Info */}
                     <div>
                         <h1 className="text-4xl font-bold text-brand-dark">{product.name}</h1>
-                        <p className="text-3xl font-bold text-brand-primary my-4">{product.pricePerSqM.toFixed(2)}€ <span className="text-base font-normal text-gray-500">/ m²</span></p>
+                        <p className="text-3xl font-bold text-brand-primary my-4">{convertPrice(product.pricePerSqM)} <span className="text-base font-normal text-gray-500">/ m²</span></p>
                         <p className="text-gray-600 leading-relaxed">{product.description}</p>
                         <div className="flex flex-wrap gap-2 my-4">
                             {product.tags.map(tag => <span key={tag} className="bg-brand-accent text-brand-dark text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize">{tag}</span>)}
@@ -209,7 +209,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId }) => {
                                 </div>
                                 <div className="mt-6 bg-brand-accent p-4 rounded-lg">
                                     <p>Surface : <span className="font-semibold">{calculatedSurface.toFixed(2)} m²</span></p>
-                                    <p className="text-xl font-bold">Prix estimé : <span className="text-brand-primary">{calculatedPrice.toFixed(2)}€</span></p>
+                                    <p className="text-xl font-bold">Prix estimé : <span className="text-brand-primary">{convertPrice(calculatedPrice)}</span></p>
                                 </div>
                                 <button
                                     onClick={handleAddToCart}

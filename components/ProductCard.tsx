@@ -7,7 +7,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-    const { setCurrentPage } = useAppContext();
+    const { setCurrentPage, convertPrice } = useAppContext();
 
     return (
         <div 
@@ -23,7 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </div>
             <div className="p-4">
                 <h3 className="text-base font-medium text-brand-dark truncate group-hover:text-brand-primary">{product.name}</h3>
-                <p className="text-lg font-bold text-brand-primary mt-2">${product.pricePerSqM.toFixed(2)} <span className="text-sm font-normal text-gray-500">/ m²</span></p>
+                <p className="text-lg font-bold text-brand-primary mt-2">{convertPrice(product.pricePerSqM)} <span className="text-sm font-normal text-gray-500">/ m²</span></p>
             </div>
         </div>
     );

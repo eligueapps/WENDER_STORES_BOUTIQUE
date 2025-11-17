@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
-import { Product, Category, CartItem, Order, Page, Customization, AppContextType, Country, City } from '../types';
-import { initialProducts, initialCategories, initialTags, initialOrders, initialTermsAndConditions, initialCountries, initialCities } from '../data';
+import { Product, Category, CartItem, Order, Page, Customization, AppContextType, Country, City, Currency } from '../types';
+import { initialProducts, initialCategories, initialTags, initialOrders, initialTermsAndConditions, initialCountries, initialCities, initialCurrencies, initialConversionRates } from '../data';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -17,7 +17,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [countries, setCountries] = useState<Country[]>(initialCountries);
     const [cities, setCities] = useState<City[]>(initialCities);
+    
+    // Currency State
+    const [currencies] = useState<Currency[]>(initialCurrencies);
+    const [currentCurrency, setCurrentCurrency] = useState<Currency>('MAD');
+    const [conversionRates, setConversionRates] = useState<{ [key in Currency]?: number }>(initialConversionRates);
 
+    const updateConversionRates = (rates: { [key in Currency]?: number }) => {
+        setConversionRates(prev => ({ ...prev, ...rates }));
+    };
+
+    const convertPrice = (priceInMAD: number, targetCurrency: Currency = currentCurrency): string => {
+        const rate = conversionRates[targetCurrency] || 1;
+        const convertedPrice = priceInMAD * rate;
+        
+        const locale = {
+            'MAD': 'fr-MA',
+            'EUR': 'fr-FR',
+            'USD': 'en-US'
+        }[targetCurrency];
+
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: targetCurrency,
+        }).format(convertedPrice);
+    };
 
     const setCurrentPage = (page: Page, id?: number) => {
         _setCurrentPage(page);
@@ -40,7 +64,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const addToCart = (product: Product, customization: Customization, quantity: number) => {
         const surface = (customization.width / 100) * (customization.height / 100) * quantity;
-        const totalPrice = surface * product.pricePerSqM;
+        const totalPrice = surface * product.pricePerSqM; // Price is always in MAD
 
         const newCartItem: CartItem = {
             id: `${product.id}-${new Date().getTime()}`,
@@ -75,12 +99,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setCart([]);
     };
 
-    const addOrder = (order: Omit<Order, 'id' | 'date' | 'paymentStatus'>) => {
+    const addOrder = (order: Omit<Order, 'id' | 'date' | 'paymentStatus' | 'currency'>) => {
         const newOrder: Order = {
             ...order,
             id: `ORD${(orders.length + 1).toString().padStart(3, '0')}`,
             date: new Date(),
             paymentStatus: 'En attente de paiement',
+            currency: currentCurrency,
         }
         setOrders(prevOrders => [newOrder, ...prevOrders]);
     };
@@ -207,7 +232,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         cities,
         addCity,
         updateCity,
-        deleteCity
+        deleteCity,
+        currencies,
+        currentCurrency,
+        setCurrentCurrency,
+        conversionRates,
+        updateConversionRates,
+        convertPrice,
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

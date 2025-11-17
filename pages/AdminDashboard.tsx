@@ -9,10 +9,11 @@ import OrderDetailsModal from '../components/admin/OrderDetailsModal';
 import CategoryManager from '../components/admin/CategoryManager';
 import ConfirmationManager from '../components/admin/ConfirmationManager';
 import DeliveryManager from '../components/admin/DeliveryManager';
+import CurrencyManager from '../components/admin/CurrencyManager';
 
 
 const AdminDashboard: React.FC = () => {
-    const { products, setProducts, orders, updateOrderStatus, termsAndConditions, setTermsAndConditions, categories, tags, logout } = useAppContext();
+    const { products, setProducts, orders, updateOrderStatus, termsAndConditions, setTermsAndConditions, categories, tags, logout, conversionRates } = useAppContext();
     const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -79,7 +80,7 @@ const AdminDashboard: React.FC = () => {
         document.body.appendChild(invoiceElement);
         
         const root = ReactDOM.createRoot(invoiceElement);
-        root.render(<OrderInvoice order={order} categories={categories} />);
+        root.render(<OrderInvoice order={order} categories={categories} conversionRates={conversionRates} />);
 
         // Give it a moment to render fully
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -119,8 +120,8 @@ const AdminDashboard: React.FC = () => {
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-brand-light p-6 rounded-xl shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-500">Ventes totales</h3>
-                    <p className="text-3xl font-bold text-brand-dark">{totalSales.toFixed(2)}€</p>
+                    <h3 className="text-lg font-semibold text-gray-500">Ventes totales (MAD)</h3>
+                    <p className="text-3xl font-bold text-brand-dark">{totalSales.toFixed(2)} MAD</p>
                 </div>
                 <div className="bg-brand-light p-6 rounded-xl shadow-sm">
                     <h3 className="text-lg font-semibold text-gray-500">Commandes totales</h3>
@@ -137,7 +138,7 @@ const AdminDashboard: React.FC = () => {
                     {recentOrders.map(order => (
                         <div key={order.id} className="flex justify-between items-center border-b border-slate-200 last:border-b-0 py-2">
                             <span>{order.id} - {order.customerName}</span>
-                            <span>{order.total.toFixed(2)}€</span>
+                            <span>{order.total.toFixed(2)} {order.currency}</span>
                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusTranslations[order.status]}`}>{order.status}</span>
                         </div>
                     ))}
@@ -147,7 +148,7 @@ const AdminDashboard: React.FC = () => {
                     {popularProducts.map(product => (
                         <div key={product.id} className="flex justify-between items-center border-b border-slate-200 last:border-b-0 py-2">
                             <span>{product.name}</span>
-                            <span className="font-semibold">{product.pricePerSqM.toFixed(2)}€/m²</span>
+                            <span className="font-semibold">{product.pricePerSqM.toFixed(2)} MAD/m²</span>
                         </div>
                     ))}
                 </div>
@@ -173,12 +174,12 @@ const AdminDashboard: React.FC = () => {
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead><tr className="border-b border-slate-200"><th className="p-2">Nom</th><th className="p-2">Prix/m²</th><th className="p-2">Actions</th></tr></thead>
+                            <thead><tr className="border-b border-slate-200"><th className="p-2">Nom</th><th className="p-2">Prix/m² (MAD)</th><th className="p-2">Actions</th></tr></thead>
                             <tbody>
                                 {products.map(p => (
                                     <tr key={p.id} className="border-b border-slate-200">
                                         <td className="p-2">{p.name}</td>
-                                        <td className="p-2">{p.pricePerSqM.toFixed(2)}€</td>
+                                        <td className="p-2">{p.pricePerSqM.toFixed(2)}</td>
                                         <td className="p-2 space-x-2">
                                             <button onClick={() => handleEditProduct(p)} className="text-blue-600 hover:underline">Modifier</button>
                                             <button onClick={() => handleProductDelete(p.id)} className="text-red-600 hover:underline">Supprimer</button>
@@ -205,7 +206,7 @@ const AdminDashboard: React.FC = () => {
                                 <tr key={order.id} className="border-b border-slate-200">
                                     <td className="p-2 font-mono text-sm">{order.id}</td>
                                     <td className="p-2">{order.customerName}</td>
-                                    <td className="p-2">{order.total.toFixed(2)}€</td>
+                                    <td className="p-2">{order.total.toFixed(2)} {order.currency}</td>
                                     <td className="p-2"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusTranslations[order.status]}`}>{order.status}</span></td>
                                     <td className="p-2">
                                         <select value={order.status} onChange={(e) => updateOrderStatus(order.id, e.target.value as Order['status'])} className="p-1 border rounded-md bg-white">
@@ -262,6 +263,7 @@ const AdminDashboard: React.FC = () => {
     const renderCategories = () => <CategoryManager />;
     const renderConfirmation = () => <ConfirmationManager />;
     const renderDelivery = () => <DeliveryManager />;
+    const renderCurrencies = () => <CurrencyManager />;
 
     const tabContent = {
         dashboard: renderDashboard(),
@@ -270,6 +272,7 @@ const AdminDashboard: React.FC = () => {
         confirmation: renderConfirmation(),
         categories: renderCategories(),
         livraison: renderDelivery(),
+        devises: renderCurrencies(),
         settings: renderSettings()
     };
     
@@ -280,6 +283,7 @@ const AdminDashboard: React.FC = () => {
         confirmation: "Confirmation & Paiement",
         categories: "Catégories",
         livraison: "Livraison",
+        devises: "Devises",
         settings: "Paramètres"
     };
 
