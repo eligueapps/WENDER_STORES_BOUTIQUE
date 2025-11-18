@@ -94,7 +94,7 @@ const DeliveryManager: React.FC = () => {
                                         {citiesForSelectedCountry.map(city => (
                                             <tr key={city.id} className="border-b last:border-b-0">
                                                 <td className="p-2 font-semibold">{city.name}</td>
-                                                <td className="p-2">{city.deliveryFee.toFixed(2)}€</td>
+                                                <td className="p-2">{city.deliveryFee.toFixed(2)} MAD</td>
                                                 <td className="p-2">{city.estimatedTime || 'N/A'}</td>
                                                 <td className="p-2"><ToggleSwitch enabled={city.isActive} onChange={(val) => updateCity({...city, isActive: val})} /></td>
                                                 <td className="p-2 flex gap-1">

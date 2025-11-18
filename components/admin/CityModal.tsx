@@ -61,7 +61,7 @@ const CityModal: React.FC<CityModalProps> = ({ city, countryId, onClose, onSave 
                              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                         </div>
                         <div>
-                            <label htmlFor="deliveryFee" className="block text-sm font-semibold mb-1">Frais de livraison (€)</label>
+                            <label htmlFor="deliveryFee" className="block text-sm font-semibold mb-1">Frais de livraison (MAD)</label>
                             <input id="deliveryFee" name="deliveryFee" type="number" value={formData.deliveryFee} onChange={handleChange} className="w-full p-2 border border-slate-300 rounded-md" required min="0" step="0.01" />
                             {errors.deliveryFee && <p className="text-red-500 text-sm mt-1">{errors.deliveryFee}</p>}
                         </div>

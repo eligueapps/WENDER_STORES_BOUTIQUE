@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Product, Category } from '../../types';
 import { PhotographIcon, FilmIcon, XIcon, UploadIcon } from '../icons/Icons';
@@ -169,7 +170,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productToEdit, onSave, onCanc
                 </div>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="pricePerSqM" className={labelStyle}>Prix par m² (€)</label>
+                        <label htmlFor="pricePerSqM" className={labelStyle}>Prix par m² (MAD)</label>
                         <input type="number" id="pricePerSqM" name="pricePerSqM" value={product.pricePerSqM} onChange={handleChange} className={inputStyle} required step="0.01" min="0" />
                         {errors.pricePerSqM && <p className="text-red-500 text-sm mt-1">{errors.pricePerSqM}</p>}
                     </div>
